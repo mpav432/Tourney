@@ -192,6 +192,7 @@ def get_scores(players,categories,games):
 
 
 
+
 def announce_round(categories,games):
     byes_this_round = []
     Teams = [[categories[i][j][0], categories[i][j + 1][0], i] for i in range(4) for j in
