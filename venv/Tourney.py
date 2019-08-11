@@ -16,8 +16,8 @@ games_lookup = {0:[['Spike Ball','2v2'],['Can Jam','2v2'],['Beer Die','2v2'],['C
 
 #This program simulates a tournement with four scrums of games.  It evenly distributes byes and maximizes the diversity of scrums played for each player.
 def init_players(): #Initializes the player list using either randomly generated or inputed names.
-   # num_players = int(input('How Many Players? '))
-    num_players = 21
+    num_players = int(input('How Many Players? '))
+    #num_players = 21
     print()
     name = [None]*num_players
     random_names = input('Randomly Generate Names? y/n: \n')
