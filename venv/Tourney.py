@@ -342,6 +342,7 @@ while round <= num_rounds:
                         points_assigned = False
                         round = which_round+1
                         break
+
                 except:
                     print()
                     break
