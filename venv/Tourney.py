@@ -2,21 +2,37 @@ import random
 import names
 import copy
 
+'''This program simulates a tournement with four categories of games.  Players are randomly matched with eachother to play in scrums of 4 in either 2v2 or FFA games.  
+If scrums of 4 cannot be formed, matchmaking will assign a bye to leftover players.  Players with the least byes have priority selection for bye assignment. Players are
+otherwise assigned to play in their least played category, assuring broad distribution.
 
-#these loopup tabes define the game and rule sets to be used in the tournement, and their corresponding category.
-category_lookup = {0:['Lawn'],
-                   1:['Bar'],
-                   2:['Board'],
-                   3:['Video']}
-games_lookup = {0:[['Spike Ball','2v2'],['Can Jam','2v2'],['Beer Die','2v2'],['Cornhole','2v2'],['Bocce Ball','2v2']],
-                   1:[['Darts','2v2'],['Pool','2v2'],['Quarters','2v2'],['Shuffleboard','2v2'],['Beruit','2v2']],
-                   2:[['Skull','FFA'],['Startups','FFA'],['Love Letter','2v2'],['Coup','2v2']],
-                   3:[['Overcoround_looks_gooded','FFA'],['Kart 64','FFA'],['Goldeneye','FFA'],['Nidhog','FFA']]}
+Two primary data set are created.  [players], and [scrums].  
 
+[players] stores all information relating to a single participant in the structure [['Name'],[[Points r1],[Points r2]...],[[Lawn Games Played],[Bar Games Played]...]] 
+[scrums] divides the players into the 5 possible categories of games [[Players in Lawn],[Players in Bar],[Players in Board],[Players in Video],[Players in Bye]]
 
-#This program simulates a tournement with four scrums of games.  It evenly distributes byes and maximizes the diversity of scrums played for each player.
-def init_players(): #Initializes the player list using either randomly generated or inputed names.
-    num_players = int(input('How Many Players? '))
+The user selects an operation to carry out on the data sets.  The datasets are passed to these functions, modified, and returned.  The available operations are below:
+
+[M]odify roster - Add or remove players from the sitting out list.  These players will be ignored by matchmaking and recieve a bye for the round. 
+[P]erform matchmaking - Create scrums of 4 and assign them to a category of game.  Leftover players receive a bye
+[A]ward points - Select a game to resolve and assign points to the winner.
+[G]et new games - Reselect the game sets if they are not satisfactory.  Does not change teams.
+[E]nd the round - Move on to the next round when all points have been awarded.
+[D]isplay player stats - Display the name, scores, and game history for each player
+[O]verwrite player score - Edit a players score through the current round
+[R]estore game to previous round - Revert the game to a previous round.
+
+At the end of the desired number of rounds, the game ends and a champion is chosen.
+'''
+
+def init_players(): #Initializes the player list using either randomly generated or user inputed names.
+    while True:
+
+        try:
+            num_players = int(input('How Many Players? '))
+            break
+        except:
+            print("That's not a number, enter a number of players")
     ##num_players = 21
     print()
     name = [None]*num_players
@@ -34,9 +50,8 @@ def init_players(): #Initializes the player list using either randomly generated
         print("Enter everyone's name one at a time")
         for i in range(num_players):
             name[i] = input('Enter Next Player: \n')
-    players = [[name[i],[],[[],[],[],[],[]]] for i in range(num_players)] #The players list has the structure ['Player Name',[number of points gained in each round],[number of games played in each category]]
+    players = [[name[i],[],[[],[],[],[],[]]] for i in range(num_players)] #The players list has the structure [['Name'],[[Points r1],[Points r2]...],[[Lawn Games Played],[Bar Games Played]...]]
     return players
-    #names = ['Matt','Max','Dan','Marco', 'Jeremy', 'Milli', 'Nat', 'Jake', 'Ben', 'Chai', 'Jon','Roberto', 'Pfitsch','Sam', 'Jonny', 'Lisa', 'Robert', 'Georige', 'Chad', 'Brendan','Bob','andrew','gina','mark','paul']
 def init_scrums():  #resets the scrums list which stores information on which player is assigned to each category each round
     return [[], [], [], [], []]  # structure for scrums list is [[Lawn],[Bar],[Board],[Video],[Bye]]
 def fill_scrums(players,roster,scrums,players_absent):  #Takes the active player list and assignes each player to a category
@@ -71,7 +86,7 @@ def fill_scrums(players,roster,scrums,players_absent):  #Takes the active player
 
 
     return scrums
-def modify_roster(players,scrums,players_absent):  #Function asks the user if players have voluntarily left the game or returned from absence.  The roster: roster is appropriatelt modified.  Players sitting out is carried over to the next round until the user indicates they have returned.
+def modify_roster(players,scrums,players_absent):  #Function asks the user if players have voluntarily left the game or returned from absence.  The roster: roster is modified accordingly.  Players sitting out is carried over to the next round until the user indicates they have returned.
     roster = players.copy()
     print()
     players_returning = []
@@ -130,18 +145,15 @@ def init_game():  #Asks the user how many players and rounds will be played, ret
     return [players, scrums, num_rounds]
     #print(games_lookup)
 def award_points(players,scrums,games,games_resolved):  # Asks the user which game is to be resolved and which particiapants are awarded points
-    '''
-    games_unresolved = copy.deepcopy(games)
-    Teams = get_teams(scrums)
-    Teams_unresolved = copy.deepcpoy(Teams)'''
+
     announce_round(scrums,Teams,games)
-    games_unresovled = [i for i in range(len(games)) if i not in games_resolved]
+    games_unresovled = [i for i in range(len(games)) if i not in games_resolved]  #finds which games are unresolved
     print('Unresovled games: '+str([games_unresovled[i]+1 for i in range(len(games_unresovled))]))
 
     try:
         game_to_resolve = int(input('Which game would you like to resolve? (1-n)\n'))-1
         games_unresovled.remove(game_to_resolve)
-        games_resolved.append(game_to_resolve)
+        games_resolved.append(game_to_resolve)  #Moving game from unresolved to resovled list
         i = (game_to_resolve)*2
 
     except:
@@ -150,7 +162,7 @@ def award_points(players,scrums,games,games_resolved):  # Asks the user which ga
 
 
 
-    if games[int(i / 2)][1] == '2v2':
+    if games[int(i / 2)][1] == '2v2':     #If the game to resolve is 2v2, then 4 points are awarded to the two winners, team A or B.
         while True:
             print('Team A: ' + str(Teams[i][0]) + ' and ' + str(Teams[i][1]) + ' vs. Team B: ' + str(
                 Teams[i + 1][0]) + ' and ' + str(Teams[i + 1][1]) + ' in ' + str(games[int(i / 2)]) + ' ? ')
@@ -179,7 +191,8 @@ def award_points(players,scrums,games,games_resolved):  # Asks the user which ga
                 print("Don't try to break me.")
                 print()
         [players[k][2][Teams[i][2]].append(games[int(i / 2)]) for k in winners_index + losers_index]
-    else:
+
+    else:    #If the game to resolve is FFA, then 4 points are awarded to 1st place, 2 points to 2nd and 3rd, and 0 points to 4th.
         print('List players in decending order starting with first place: ' + str(Teams[i][0]) + ', ' + str(
             Teams[i][1]) + ', ' + str(Teams[i + 1][0]) + ', and ' + str(
             Teams[i + 1][1]) + ' in the game of ' + str(games[int(i / 2)]) + '?')
@@ -197,25 +210,20 @@ def award_points(players,scrums,games,games_resolved):  # Asks the user which ga
 
                 except:
                     print("That's not one of the available players, try again")
-        [players[j][1].append(0) for j in range(len(players)) if players[j][0].lower() == players_in_game[0]]
+        [players[j][1].append(0) for j in range(len(players)) if players[j][0].lower() == players_in_game[0]] #The remaining plays recieves 0 points.
 
 
     print()
 
 
-
-    """for i in range(len(players)):  #This loop increments the players' category count based on which category they were placed in this round.  This tracks what scrums each player has played.
-        for j in range((len(scrums))):
-            if players[i][0] in [scrums[j][k][0] for k in range(len(scrums[j]))]:
-                players[i][2][j].append("""
-    [print(players[i][0:2]) for i in range(len(players))]
+    [print(players[i][0:2]) for i in range(len(players))]  #Prints the scores
     print("Here are the scores")
     return players, games_resolved
-def get_teams(scrums):
+def get_teams(scrums):  # groups the scrums into teams, which is easer to hanle for some operations.
     Teams = [[scrums[i][j][0], scrums[i][j + 1][0], i] for i in range(4) for j in
              range(0, len(scrums[i]), 2)]
     return Teams
-def announce_round(scrums,Teams,games):
+def announce_round(scrums,Teams,games): #prints the current matchmaking and game selections.
     byes_this_round = []
     print()
     print('Round: ' + str(round))
@@ -237,12 +245,12 @@ def announce_round(scrums,Teams,games):
     print()
     print("Players taking bye this round: " + str(byes_this_round))
     print()
-def choose_games(scrums):
+def choose_games(scrums): #Randomly chooses games to play
     Teams = get_teams(scrums)
     games = []
     games = [games_lookup[Teams[i][2]][random.randint(0, len(games_lookup[Teams[i][2]])-1)] for i in range(0, len(Teams), 2)]
     return games
-def assign_scores(players):
+def assign_scores(players): #Asks the user which player's score needs to be updated, then allows re-writing of the score list
     num_rounds_played = len(players[0][1])
     while True:
         try:
@@ -264,7 +272,7 @@ def assign_scores(players):
         except:
             print('That is not a player in the tournament')
     return(players)
-def restore_round(players,which_round):
+def restore_round(players,which_round): #Asks the user which round should be restore, then looks up the players dataset for that round which is stored in players_history.  Resets all variables and restores this saved data.
     while True:
         try:
             if which_round <= len(players[0][1]) and which_round!= '':
@@ -283,37 +291,44 @@ def restore_round(players,which_round):
             print()
             break
 
-
-
-
+#initialize some lists to be used later
 [players, scrums, num_rounds] = init_game()
-#initializes some lists to be used later
 players_absent = []
 byes_list = []
 game_history = [None]*(num_rounds+1)
 players_history = [None]*(num_rounds+1)
 players_history[0] = copy.deepcopy(players)
 round = 1
+#these loopup tabes define the game and rule sets to be used in the tournement, and their corresponding category.
+category_lookup = {0:['Lawn'],
+                   1:['Bar'],
+                   2:['Board'],
+                   3:['Video']}
+games_lookup = {0:[['Spike Ball','2v2'],['Can Jam','2v2'],['Beer Die','2v2'],['Cornhole','2v2'],['Bocce Ball','2v2'],['Aquatic Spike Ball','2v2'],['Lawn Darts','FFA'],['Wall Ball','2v2']],
+                   1:[['Darts','2v2'],['Pool','2v2'],['Quarters','2v2'],['Shuffleboard','2v2'],['Beruit','2v2'],['Air Hockey','FFA'],['Asshole','FFA'],['Pool','FFA' ]],
+                   2:[['Skull','FFA'],['Startups','FFA'],['Love Letter','2v2'],['Coup','2v2'],['Dominion','FFA'],['Smallworld','2v2'],['Hearts','FFA'],['Kemps','2v2'],['Asshole','2v2']],
+                   3:[['Overcooked','FFA'],['Kart 64','FFA'],['Goldeneye','FFA'],['Nidhog','FFA'],['Halo 1: Combat Evolved','2v2'],['Halo 1: Combat Evolved','FFA'],['Smash Ultimate','FFA'],['Smash Ultimate','2v2']]}
 
 print("Welcome to the tournament.")
 [print(players[i][0]) for i in range(len(players))]
 print('Are ready to play')
 roster = copy.deepcopy(players)
-while round <= num_rounds:
+while round <= num_rounds:  #This is the primary game loop, each iteration represents one round.  Only a user action an initate the next round after all conditions are met.
     print()
     print('Round '+str(round)+' has begun!')
     print()
     scrums = init_scrums()
     games_resolved = []
     points_assigned = False
-    while True:
+    while True:  #This loop allows the user to input un-ending commands to modify the datasets as needed for the round.  This is only broken by moving to the next round.
         print()
         print('Round '+str(round))
 
         user_action = input('Choose an action to perform: \n[M]odify roster\n[P]erform matchmaking\n[A]ward points\n[G]et new games\n[E]nd the round\n[D]isplay player stats\n[O]verwrite player score\n[R]estore game to previous round\n').lower()
-        if user_action == 'm':
+        if user_action == 'm': #[M]odify roster - Add or remove players from the sitting out list.  These players will be ignored by matchmaking and recieve a bye for the round.
             [players, roster, scrums, players_absent] = modify_roster(players, scrums, players_absent)
-        elif user_action == 'p':
+
+        elif user_action == 'p':#[P]erform matchmaking - Create scrums of 4 and assign them to a category of game.  Leftover players receive a bye
             if points_assigned ==False:
                 scrums = fill_scrums(players, roster, scrums, players_absent)
                 games = choose_games(scrums)
@@ -330,7 +345,7 @@ while round <= num_rounds:
                     Teams = get_teams(scrums)
                     announce_round(scrums, Teams, games)
 
-        elif user_action == 'r':
+        elif user_action == 'r':#[R]estore game to previous round
             while True:
                 try:
                     which_round = int(input('Which round would you like to go back to? Enter a letter to cancel.\n'))
@@ -340,6 +355,7 @@ while round <= num_rounds:
                     if round_looks_good == 'yes' or round_looks_good == 'y':
                         scrums = init_scrums()
                         points_assigned = False
+                        games_resolved = []
                         round = which_round+1
                         break
 
@@ -348,9 +364,9 @@ while round <= num_rounds:
                     break
                     print()
 
-        elif user_action == 'a':
+        elif user_action == 'a': #[A]ward points - Select a game to resolve and assign points to the winner.
 
-            if scrums[0]==[]:
+            if scrums==[[],[],[],[],[]]:
                 print()
                 print('Cannot assign points until matchmaking is complete.  Enter "p"\n')
             elif games_resolved == list(range(int(len(players)/4))):
@@ -360,10 +376,11 @@ while round <= num_rounds:
                 [players, games_resolved] = award_points(players, scrums, games,games_resolved)
                 points_assigned = True
 
-        elif user_action == 'o':
+        elif user_action == 'o': #[O]verwrite player score
             players = assign_scores(players)
 
-        elif user_action == 'e':
+        elif user_action == 'e':#[E]nd the round - Move on to the next round when all points have been awarded.
+
             if games_resolved == list(range(int(len(players)/4))):
                 [players[k][2][4].append(['Bye', ['']]) for k in range(len(players)) if players[k] in scrums[-1]]
                 [players[k][1].append(0) for k in range(len(players)) if players[k][0] in [scrums[-1][l][0] for l in range(len(scrums[-1]))]]
@@ -371,7 +388,8 @@ while round <= num_rounds:
             else:
                 print()
                 print('Some teams have not been assigned points, cannot continue to next round.')
-        elif user_action == 'g':
+
+        elif user_action == 'g': #[G]et new games - Reselect the game sets if they are not satisfactory.  Does not change teams.
             if scrums[0]==[]:
                 print()
                 print('Cannot assign games until matchmaking is complete.  Enter "p"')
@@ -379,31 +397,21 @@ while round <= num_rounds:
                 games = choose_games(scrums)
                 Teams = get_teams(scrums)
                 announce_round(scrums,Teams, games)
-        elif user_action == 'd':
+
+        elif user_action == 'd':#[D]isplay player stats - Display the name, scores, and game history for each player
             [print(players[i]) for i in range(len(players))]
+
         else:
             print("That's not a valid input.\n")
 
-   # games = choose_games(scrums)
+    game_history[round] = copy.deepcopy(scrums)  #saves the game history
+    players_history[round] = copy.deepcopy(players) #saves the players history
 
-    game_history[round] = copy.deepcopy(scrums)
-    players_history[round] = copy.deepcopy(players)
-
-    [byes_list.append(scrums[-1][i][0]) for i in range(len(scrums[-1]))]
-
-
-
-#    print(sum([(sum(players[i][1])) for i in range(len(players))]))
-#    round_sum = sum([players[i][1][round-1] for i in range(len(players))])
-#    print(round_sum)
+    [byes_list.append(scrums[-1][i][0]) for i in range(len(scrums[-1]))]  #Add players who received a bye to the bye list.
+    # These players can resolve their byes at the end of the tournemeny by either receiving one point or playing eachother
+    # in a post-game scrum
     round += 1
 
-
-
-
-
-
-    # roster = roster[:-1]
 print()
 print("All players with byes: " + str(byes_list))
 #print(roster)
@@ -411,4 +419,5 @@ scores = [sum(players[i][1]) for i in range(len(players))]
 print(scores)
 winner = [players[i][0] for i in range(len(players)) if sum(players[i][1]) >= max(scores)]
 
-print(str(winner)+ ' is the winner')
+print(str(winner)+ ' is the winner!\n\n\n')
+[print(players[i]) for i in range(len(players))]
