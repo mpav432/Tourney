@@ -1,3 +1,7 @@
+# How to run
+
+To run the script: download the venv directory into a python project location and run the 'Tourney.py' Script
+
 # Instructions
 
 This program simulates a tournement with four categories of games.  Players are randomly matched with eachother to play in scrums of 4 in either 2v2 or FFA games.  
@@ -21,7 +25,3 @@ The user selects an operation to carry out on the data sets.  The datasets are p
 `R`estore game to previous round - Revert the game to a previous round.
 
 At the end of the desired number of rounds, the game ends and a champion is chosen
-
-# How to run
-
-Matt how do I run this thing
