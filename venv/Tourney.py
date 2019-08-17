@@ -26,17 +26,17 @@ At the end of the desired number of rounds, the game ends and a champion is chos
 '''
 
 def init_players(): #Initializes the player list using either randomly generated or user inputed names.
-    while True:
+    '''while True:
 
         try:
             num_players = int(input('How Many Players? '))
             break
         except:
-            print("That's not a number, enter a number of players")
-    #num_players = 21
+            print("That's not a number, enter a number of players")'''
+    num_players = 17
     print()
     name = [None]*num_players
-    random_names = input('Randomly Generate Names? y/n: \n')
+    '''random_names = input('Randomly Generate Names? y/n: \n')
     if random_names == 'y':
 
         name = [names.get_first_name() for i in range(num_players)]
@@ -49,7 +49,8 @@ def init_players(): #Initializes the player list using either randomly generated
     else:
         print("Enter everyone's name one at a time")
         for i in range(num_players):
-            name[i] = input('Enter Next Player: \n')
+            name[i] = input('Enter Next Player: \n')'''
+    name = ['Matt','Max','David','Johnny','Serena','Dan','Sam','Marco','Ben','Chai','Robert','Pfitsch','Nat','Ali','Khaaliq','Jon','Milli']
     players = [[name[i],[],[[],[],[],[],[]]] for i in range(num_players)] #The players list has the structure [['Name'],[[Points r1],[Points r2]...],[[Lawn Games Played],[Bar Games Played]...]]
     return players
 def init_scrums():  #resets the scrums list which stores information on which player is assigned to each category each round
@@ -131,7 +132,7 @@ def modify_roster(players,scrums,players_absent):  #Function asks the user if pl
 
     print(str(list([roster[i][0] for i in range(len(roster))])) + ' are in the game.')
     print()
-    print('Absent players this round whom will receive a bye: '+str(players_absent))
+    print('Absent players this round whom will receive a bye: {}'.format(players_absent))
     return [players,roster,scrums,players_absent]
 def init_game():  #Asks the user how many players and rounds will be played, returns the data structures players and scrums which are operated on by the other functions.
     players = init_players()
@@ -164,8 +165,7 @@ def award_points(players,scrums,games,games_resolved):  # Asks the user which ga
 
     if games[int(i / 2)][1] == '2v2':     #If the game to resolve is 2v2, then 4 points are awarded to the two winners, team A or B.
         while True:
-            print('Team A: ' + str(Teams[i][0]) + ' and ' + str(Teams[i][1]) + ' vs. Team B: ' + str(
-                Teams[i + 1][0]) + ' and ' + str(Teams[i + 1][1]) + ' in ' + str(games[int(i / 2)]) + ' ? ')
+            print('Team A: {} and {} vs. Team B: {} and {} in {}?'.format( str(Teams[i][0]),str(Teams[i][1]),str(Teams[i + 1][0]), str(Teams[i + 1][1]), str(games[int(i / 2)])))
             winner = input('Enter "A" or "B" for winner\n').lower()
             #winner = random.choice(['A', 'B'])
             if winner == 'a':
@@ -304,10 +304,10 @@ category_lookup = {0:['Lawn'],
                    1:['Bar'],
                    2:['Board'],
                    3:['Video']}
-games_lookup = {0:[['Spike Ball','2v2'],['Can Jam','2v2'],['Beer Die','2v2'],['Cornhole','2v2'],['Bocce Ball','2v2'],['Aquatic Spike Ball','2v2'],['Lawn Darts','FFA'],['Wall Ball','2v2']],
-                   1:[['Darts','2v2'],['Pool','2v2'],['Quarters','2v2'],['Shuffleboard','2v2'],['Beruit','2v2'],['Air Hockey','FFA'],['Asshole','FFA'],['Pool','FFA' ]],
-                   2:[['Skull','FFA'],['Startups','FFA'],['Love Letter','2v2'],['Coup','2v2'],['Dominion','FFA'],['Smallworld','2v2'],['Hearts','FFA'],['Kemps','2v2'],['Asshole','2v2']],
-                   3:[['Overcooked','FFA'],['Kart 64','FFA'],['Goldeneye','FFA'],['Nidhog','FFA'],['Halo 1: Combat Evolved','2v2'],['Halo 1: Combat Evolved','FFA'],['Smash Ultimate','FFA'],['Smash Ultimate','2v2']]}
+games_lookup = {0:[['Spike Ball','2v2'],['Can Jam','2v2'],['Beer Die','2v2'],['Cornhole','2v2'],['Obstacle Course','2v2'],['Aquatic Spike Ball','2v2'],['Tramampolene','FFA'],['Ping Pong','2v2']],
+                   1:[['Darts','2v2'],['Pool','2v2'],['Shuffleboard','2v2'],['Beruit','2v2'],['Air Hockey','FFA'],['Asshole','FFA'],['Foosball','2v2' ]],
+                   2:[['Skull','FFA'],['Startups','FFA'],['Love Letter','FFA'],['Coup','2v2'],['Code Names','2v2'],['Seven Wonders','FFA'],['Azul','2v2']],
+                   3:[['Overcooked','2v2'],['Bullshit Kart 10 or whatever','FFA'],['Halo 1: Combat Evolved','2v2'],['Halo 1: Combat Evolved','FFA'],['Smash Ultimate','FFA'],['Smash Ultimate','2v2'],['Duck Game','2v2']]}
 
 print("Welcome to the tournament.")
 [print(players[i][0]) for i in range(len(players))]
