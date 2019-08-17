@@ -50,7 +50,7 @@ def init_players(): #Initializes the player list using either randomly generated
         print("Enter everyone's name one at a time")
         for i in range(num_players):
             name[i] = input('Enter Next Player: \n')'''
-    name = ['Matt','Max','David','Johnny','Serena','Dan','Sam','Marco','Ben','Chai','Robert','Pfitsch','Nat','Ali','Khaaliq','Jon','Milli']
+    name = ['Matt','Max','David','Johnny','Serena','Dan','Sam','Marco','Ben','Chai','Robert','Pfitsch','Nat','Ali','Khaaliq','Jon','Milli','Russel','Lisa']
     players = [[name[i],[],[[],[],[],[],[]]] for i in range(num_players)] #The players list has the structure [['Name'],[[Points r1],[Points r2]...],[[Lawn Games Played],[Bar Games Played]...]]
     return players
 def init_scrums():  #resets the scrums list which stores information on which player is assigned to each category each round
