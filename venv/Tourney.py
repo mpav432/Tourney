@@ -33,7 +33,7 @@ def init_players(): #Initializes the player list using either randomly generated
             break
         except:
             print("That's not a number, enter a number of players")
-    ##num_players = 21
+    #num_players = 21
     print()
     name = [None]*num_players
     random_names = input('Randomly Generate Names? y/n: \n')
